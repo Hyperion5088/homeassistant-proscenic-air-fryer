@@ -3,13 +3,15 @@
     "step": {
       "user": {
         "title": "Proscenic Air Fryer",
-        "description": "Add a stock Proscenic/Tuya air fryer. Enter your Proscenic account details and fryer IP address. The password is used once to fetch the Local Key and is not stored.",
+        "description": "Add a stock Proscenic/Tuya air fryer. Enter your Proscenic account details. Leave Fryer IP Address blank to discover it from Tuya LAN broadcasts. The password is used once to fetch the Local Key and is not stored.",
         "data": {
           "username": "Proscenic Email",
           "password": "Proscenic Password",
           "host": "Fryer IP Address",
           "device_id": "Device ID",
           "local_key": "Local Key",
+          "discovery_method": "Discovery Method",
+          "scan_subnet": "Scan Subnet",
           "region": "Tuya Region",
           "protocol_version": "Tuya Protocol Version",
           "temperature_unit": "Temperature Unit"
@@ -17,13 +19,14 @@
         "sections": {
           "advanced_options": {
             "name": "Advanced Options",
-            "description": "Usually leave these unchanged. Device ID and Local Key are fetched automatically when left blank."
+            "description": "Usually leave these unchanged. Device ID and Local Key are fetched automatically when left blank. Use subnet scan when UDP broadcasts do not cross VLANs."
           }
         }
       }
     },
     "error": {
       "cannot_connect": "Could not connect to the fryer locally. Check the IP, VLAN/firewall rules, local key, and protocol version.",
+      "cannot_discover": "Could not discover the fryer. Check that Home Assistant can receive Tuya LAN broadcasts, use subnet scan with a CIDR such as 192.168.13.0/24, or enter the IP address manually.",
       "cannot_fetch_key": "Could not fetch the local key from the Proscenic account.",
       "invalid_auth": "The Proscenic credentials were rejected.",
       "unknown": "Unexpected error."
@@ -39,6 +42,8 @@
         "data": {
           "host": "Fryer IP Address",
           "local_key": "Local Key",
+          "discovery_method": "Discovery Method",
+          "scan_subnet": "Scan Subnet",
           "protocol_version": "Tuya Protocol Version",
           "temperature_unit": "Temperature Unit"
         }

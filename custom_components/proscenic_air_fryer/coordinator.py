@@ -35,6 +35,7 @@ from .const import (
     DP_START,
     DP_STATUS,
     DP_TEMPERATURE_UNIT,
+    DP_UNKNOWN_12,
     DP_UNKNOWN_107,
     DP_WARM_TIME,
 )
@@ -67,6 +68,7 @@ class ProscenicAirFryerData:
     cooking_temperature: int | None = None
     cooking_time: int | None = None
     remaining_time: int | None = None
+    unknown_12: int | None = None
     warm_time: int | None = None
     delayed_time: int | None = None
     pot_pulled: bool | None = None
@@ -142,10 +144,6 @@ class ProscenicAirFryerCoordinator(DataUpdateCoordinator[ProscenicAirFryerData])
         """Enable or disable delayed cook."""
         await self._set_dp(DP_DELAYED_COOK, on)
 
-    async def async_set_mode(self, value: str) -> None:
-        """Set cooking mode/preset."""
-        await self._set_dp(DP_MODE, value)
-
     async def async_set_cooking_temperature(self, value: int) -> None:
         """Set cooking temperature."""
         await self._set_dp(DP_COOK_TEMP, self.device_temperature(value))
@@ -219,6 +217,7 @@ def _normalize(raw: dict[str, Any]) -> ProscenicAirFryerData:
         cooking_temperature=_int(raw.get(DP_COOK_TEMP)),
         cooking_time=_int(raw.get(DP_COOK_TIME)),
         remaining_time=_int(raw.get(DP_REMAINING_TIME)),
+        unknown_12=_int(raw.get(DP_UNKNOWN_12)),
         warm_time=_int(raw.get(DP_WARM_TIME)),
         delayed_time=_int(raw.get(DP_DELAYED_TIME)),
         pot_pulled=_bool(raw.get(DP_POT_PULLED)),

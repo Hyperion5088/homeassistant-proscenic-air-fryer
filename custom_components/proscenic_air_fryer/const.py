@@ -7,14 +7,17 @@ from homeassistant.const import Platform
 DOMAIN = "proscenic_air_fryer"
 
 CONF_DEVICE_ID = "device_id"
+CONF_DISCOVERY_METHOD = "discovery_method"
 CONF_HOST = "host"
 CONF_LOCAL_KEY = "local_key"
 CONF_PASSWORD = "password"
 CONF_PROTOCOL_VERSION = "protocol_version"
 CONF_REGION = "region"
+CONF_SCAN_SUBNET = "scan_subnet"
 CONF_TEMPERATURE_UNIT = "temperature_unit"
 CONF_USERNAME = "username"
 
+DEFAULT_DISCOVERY_METHOD = "broadcast"
 DEFAULT_PROTOCOL_VERSION = "3.3"
 DEFAULT_REGION = "eu"
 DEFAULT_TEMPERATURE_UNIT = "F"
@@ -37,6 +40,19 @@ STATUS_OPTIONS = {
     "end": "Complete",
 }
 
+MODE_OPTIONS = {
+    "dbf1": "Manual",
+    "dfb2": "Chips",
+    "dfb3": "Shrimp",
+    "dfb4": "Pizza",
+    "dfb5": "Chicken",
+    "dfb6": "Fish",
+    "dfb7": "Steaks",
+    "dfb8": "Cake",
+    "dfb9": "Streaky Meat",
+    "dfb10": "Preheat",
+}
+
 DP_POWER = "1"
 DP_START = "2"
 DP_MODE = "3"
@@ -44,6 +60,7 @@ DP_STATUS = "5"
 DP_DELAYED_TIME = "6"
 DP_COOK_TIME = "7"
 DP_REMAINING_TIME = "8"
+DP_UNKNOWN_12 = "12"
 DP_POT_PULLED = "102"
 DP_COOK_TEMP = "103"
 DP_KEEP_WARM = "104"

@@ -45,15 +45,15 @@ class ProscenicStatusButton(ProscenicAirFryerEntity, ButtonEntity):
 
 
 class ProscenicStartStopButton(ProscenicAirFryerEntity, ButtonEntity):
-    """Send the T21 start/stop command."""
+    """Send the T21 start command."""
 
-    _attr_icon = "mdi:play-pause"
-    _attr_name = "Start Stop"
+    _attr_icon = "mdi:play"
+    _attr_name = "Start Cooking"
 
     def __init__(self, coordinator: ProscenicAirFryerCoordinator) -> None:
         """Initialize the button."""
         super().__init__(coordinator, "start_stop")
 
     async def async_press(self) -> None:
-        """Send the pulse-style start/stop datapoint."""
+        """Send the pulse-style start datapoint."""
         await self.coordinator.async_set_start_pause(True)

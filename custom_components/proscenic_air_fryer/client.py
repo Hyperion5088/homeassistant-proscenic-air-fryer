@@ -11,6 +11,7 @@ from typing import Any
 
 import requests
 import tinytuya
+from tinytuya import scanner
 
 PROSCENIC_CLIENT_ID = "ja9ntfcxcs8qg5sqdcfm"
 PROSCENIC_SECRET = (
@@ -32,6 +33,10 @@ class ProscenicLocalError(Exception):
     """Raised when local Tuya communication fails."""
 
 
+class ProscenicDiscoveryError(ProscenicLocalError):
+    """Raised when local Tuya discovery cannot find the fryer."""
+
+
 @dataclass
 class ProscenicDevice:
     """Device details returned by the Proscenic OEM Tuya API."""
@@ -43,6 +48,16 @@ class ProscenicDevice:
     uuid: str | None
     product_id: str | None
     dps: dict[str, Any]
+
+
+@dataclass
+class ProscenicDiscoveredDevice:
+    """Local Tuya discovery result."""
+
+    device_id: str
+    host: str
+    protocol_version: str | None
+    raw: dict[str, Any]
 
 
 class ProscenicOemCloud:
@@ -235,6 +250,115 @@ def fetch_oem_device(
     return devices[0]
 
 
+def discover_local_devices(maxretry: int = 8) -> list[ProscenicDiscoveredDevice]:
+    """Discover local Tuya devices announced by UDP broadcast on the LAN."""
+    discovered = tinytuya.deviceScan(
+        verbose=False,
+        maxretry=maxretry,
+        color=False,
+        poll=False,
+        forcescan=False,
+    )
+    devices: list[ProscenicDiscoveredDevice] = []
+    for host, details in discovered.items():
+        if not isinstance(details, dict):
+            continue
+        raw = {str(k): v for k, v in details.items()}
+        device_id = _first_present(raw, "gwId", "devId", "id")
+        if not device_id:
+            continue
+        devices.append(
+            ProscenicDiscoveredDevice(
+                device_id=device_id,
+                host=str(raw.get("ip") or host),
+                protocol_version=_version(raw.get("version")),
+                raw=raw,
+            )
+        )
+    return devices
+
+
+def discover_local_device(
+    device_id: str,
+    maxretry: int = 8,
+) -> ProscenicDiscoveredDevice | None:
+    """Discover a specific Tuya device by device ID."""
+    for device in discover_local_devices(maxretry=maxretry):
+        if device.device_id == device_id:
+            return device
+    return None
+
+
+def scan_local_device(
+    device_id: str,
+    local_key: str,
+    subnet: str,
+) -> ProscenicDiscoveredDevice | None:
+    """Find a specific Tuya device by scanning a user-provided subnet."""
+    discovered = scanner.devices(
+        verbose=False,
+        scantime=0,
+        color=False,
+        poll=False,
+        forcescan=[subnet],
+        discover=False,
+        wantids=[device_id],
+        tuyadevices=[
+            {
+                "id": device_id,
+                "key": local_key,
+                "name": "Proscenic Air Fryer",
+            }
+        ],
+        assume_yes=True,
+        maxdevices=1,
+    )
+    for device in _normalize_discovered(discovered or {}):
+        if device.device_id == device_id:
+            return device
+    return None
+
+
 def test_local_device(device_id: str, host: str, local_key: str, version: str) -> dict[str, Any]:
     """Read local status from a device."""
     return ProscenicLocalTuyaClient(device_id, host, local_key, version).status()
+
+
+def _first_present(data: dict[str, Any], *keys: str) -> str | None:
+    """Return the first non-empty string value for any key."""
+    for key in keys:
+        value = data.get(key)
+        if value is not None and value != "":
+            return str(value)
+    return None
+
+
+def _version(value: Any) -> str | None:
+    """Normalize a discovered Tuya protocol version."""
+    if value is None:
+        return None
+    text = str(value)
+    return text if text else None
+
+
+def _normalize_discovered(
+    discovered: dict[Any, Any],
+) -> list[ProscenicDiscoveredDevice]:
+    """Normalize TinyTuya discovery dictionaries."""
+    devices: list[ProscenicDiscoveredDevice] = []
+    for host, details in discovered.items():
+        if not isinstance(details, dict):
+            continue
+        raw = {str(k): v for k, v in details.items()}
+        device_id = _first_present(raw, "gwId", "devId", "id")
+        if not device_id:
+            continue
+        devices.append(
+            ProscenicDiscoveredDevice(
+                device_id=device_id,
+                host=str(raw.get("ip") or host),
+                protocol_version=_version(raw.get("version")),
+                raw=raw,
+            )
+        )
+    return devices

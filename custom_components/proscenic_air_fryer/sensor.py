@@ -13,11 +13,14 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     CONF_DEVICE_ID,
+    CONF_DISCOVERY_METHOD,
     CONF_HOST,
     CONF_LOCAL_KEY,
     CONF_PROTOCOL_VERSION,
     CONF_REGION,
+    CONF_SCAN_SUBNET,
     DOMAIN,
+    MODE_OPTIONS,
     STATUS_OPTIONS,
 )
 from .coordinator import ProscenicAirFryerCoordinator
@@ -50,7 +53,7 @@ async def async_setup_entry(
                 "mode",
                 "Mode",
                 "mdi:silverware-fork-knife",
-                lambda data: data.mode,
+                lambda data: MODE_OPTIONS.get(data.mode, data.mode),
             ),
             ProscenicAirFryerSensor(
                 coordinator,
@@ -82,6 +85,15 @@ async def async_setup_entry(
             ),
             ProscenicAirFryerSensor(
                 coordinator,
+                "unknown_12",
+                "Unknown DP 12",
+                "mdi:help-circle-outline",
+                lambda data: data.unknown_12,
+                entity_category=EntityCategory.DIAGNOSTIC,
+                enabled_default=False,
+            ),
+            ProscenicAirFryerSensor(
+                coordinator,
                 "temperature_unit_flag",
                 "Temperature Unit Flag",
                 "mdi:thermometer-lines",
@@ -107,6 +119,15 @@ async def async_setup_entry(
                 entity_category=EntityCategory.DIAGNOSTIC,
                 enabled_default=False,
                 attributes_fn=lambda data: {"dps": data.raw},
+            ),
+            ProscenicAirFryerSensor(
+                coordinator,
+                "raw_mode",
+                "Raw Mode",
+                "mdi:code-string",
+                lambda data: data.mode,
+                entity_category=EntityCategory.DIAGNOSTIC,
+                enabled_default=False,
             ),
             ProscenicAirFryerSensor(
                 coordinator,
@@ -176,6 +197,24 @@ async def async_setup_entry(
                 "Tuya Protocol Version",
                 "mdi:lan-connect",
                 lambda data: coordinator.config.get(CONF_PROTOCOL_VERSION),
+                entity_category=EntityCategory.DIAGNOSTIC,
+                enabled_default=False,
+            ),
+            ProscenicAirFryerSensor(
+                coordinator,
+                "diagnostic_discovery_method",
+                "Discovery Method",
+                "mdi:radar",
+                lambda data: coordinator.config.get(CONF_DISCOVERY_METHOD),
+                entity_category=EntityCategory.DIAGNOSTIC,
+                enabled_default=False,
+            ),
+            ProscenicAirFryerSensor(
+                coordinator,
+                "diagnostic_scan_subnet",
+                "Scan Subnet",
+                "mdi:ip-network-outline",
+                lambda data: coordinator.config.get(CONF_SCAN_SUBNET),
                 entity_category=EntityCategory.DIAGNOSTIC,
                 enabled_default=False,
             ),
