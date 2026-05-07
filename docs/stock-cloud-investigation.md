@@ -1,6 +1,8 @@
 # Stock ProscenicHome Cloud Investigation
 
-Goal: support an unmodified Proscenic air fryer through the ProscenicHome app/cloud API.
+Goal: support an unmodified Proscenic air fryer through the Proscenic/Tuya OEM path.
+
+Compatibility note: the working implementation has only been tested with a Proscenic T21. Other Proscenic/Tuya air fryers may work if they use the same OEM account flow, local Tuya protocol, and compatible datapoints.
 
 ## Current Findings
 
@@ -68,7 +70,7 @@ The key result is the air fryer device metadata, especially `typeName`, `code`, 
 
 ## Likely Implementation Shape
 
-Once the stock cloud path is known, the Home Assistant integration should be changed from local MQTT to cloud polling:
+Once the stock cloud path is known, the Home Assistant integration could add a cloud mode:
 
 - config flow collects the credentials and region needed by the chosen cloud path
 - API client logs in and stores tokens in memory

@@ -23,16 +23,9 @@ DEFAULT_SCAN_INTERVAL_SECONDS = 15
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.NUMBER,
-    Platform.SELECT,
     Platform.SENSOR,
     Platform.SWITCH,
 ]
-
-MODE_OPTIONS = {
-    "dbf1": "Custom",
-    "dfb10": "Preset 10",
-    "dfb11": "Preset 11",
-}
 
 STATUS_OPTIONS = {
     "off": "Off",

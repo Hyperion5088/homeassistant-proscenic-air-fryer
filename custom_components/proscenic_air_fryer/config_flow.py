@@ -8,6 +8,7 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import section
 
 from .client import (
     ProscenicApiError,
@@ -33,6 +34,7 @@ from .const import (
 
 REGIONS = ["eu", "us", "cn", "in"]
 PROTOCOL_VERSIONS = ["3.3", "3.4", "3.5"]
+CONF_ADVANCED_OPTIONS = "advanced_options"
 
 
 def _schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
@@ -40,23 +42,48 @@ def _schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
     defaults = defaults or {}
     return vol.Schema(
         {
-            vol.Required(CONF_USERNAME, default=defaults.get(CONF_USERNAME, "")): str,
+            vol.Required(
+                CONF_USERNAME,
+                default=defaults.get(CONF_USERNAME, ""),
+            ): str,
             vol.Required(CONF_PASSWORD): str,
             vol.Required(CONF_HOST, default=defaults.get(CONF_HOST, "")): str,
-            vol.Optional(CONF_DEVICE_ID, default=defaults.get(CONF_DEVICE_ID, "")): str,
-            vol.Optional(CONF_LOCAL_KEY, default=defaults.get(CONF_LOCAL_KEY, "")): str,
             vol.Optional(
-                CONF_REGION,
-                default=defaults.get(CONF_REGION, DEFAULT_REGION),
-            ): vol.In(REGIONS),
-            vol.Optional(
-                CONF_PROTOCOL_VERSION,
-                default=defaults.get(CONF_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION),
-            ): vol.In(PROTOCOL_VERSIONS),
-            vol.Optional(
-                CONF_TEMPERATURE_UNIT,
-                default=defaults.get(CONF_TEMPERATURE_UNIT, DEFAULT_TEMPERATURE_UNIT),
-            ): vol.In(["F", "C"]),
+                CONF_ADVANCED_OPTIONS,
+                default={},
+            ): section(
+                vol.Schema(
+                    {
+                        vol.Optional(
+                            CONF_DEVICE_ID,
+                            default=defaults.get(CONF_DEVICE_ID, ""),
+                        ): str,
+                        vol.Optional(
+                            CONF_LOCAL_KEY,
+                            default=defaults.get(CONF_LOCAL_KEY, ""),
+                        ): str,
+                        vol.Optional(
+                            CONF_REGION,
+                            default=defaults.get(CONF_REGION, DEFAULT_REGION),
+                        ): vol.In(REGIONS),
+                        vol.Optional(
+                            CONF_PROTOCOL_VERSION,
+                            default=defaults.get(
+                                CONF_PROTOCOL_VERSION,
+                                DEFAULT_PROTOCOL_VERSION,
+                            ),
+                        ): vol.In(PROTOCOL_VERSIONS),
+                        vol.Optional(
+                            CONF_TEMPERATURE_UNIT,
+                            default=defaults.get(
+                                CONF_TEMPERATURE_UNIT,
+                                DEFAULT_TEMPERATURE_UNIT,
+                            ),
+                        ): vol.In(["F", "C"]),
+                    }
+                ),
+                {"collapsed": True},
+            ),
         }
     )
 
@@ -212,7 +239,14 @@ def _resolve_setup(data: dict[str, Any]) -> dict[str, Any]:
 
 def _clean_input(data: dict[str, Any]) -> dict[str, Any]:
     """Normalize user input."""
-    cleaned = dict(data)
+    cleaned = {
+        CONF_REGION: DEFAULT_REGION,
+        CONF_PROTOCOL_VERSION: DEFAULT_PROTOCOL_VERSION,
+        CONF_TEMPERATURE_UNIT: DEFAULT_TEMPERATURE_UNIT,
+        **data,
+        **(data.get(CONF_ADVANCED_OPTIONS) or {}),
+    }
+    cleaned.pop(CONF_ADVANCED_OPTIONS, None)
     for key in (
         CONF_USERNAME,
         CONF_PASSWORD,

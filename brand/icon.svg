@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Proscenic Air Fryer icon</title>
+  <desc id="desc">A compact air fryer basket with heat lines and a beta mark.</desc>
+  <defs>
+    <linearGradient id="body" x1="56" y1="46" x2="204" y2="222" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#334155"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="basket" x1="72" y1="136" x2="184" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="#f8fafc"/>
+  <circle cx="128" cy="128" r="108" fill="#e2e8f0"/>
+  <path d="M85 46h86c25 0 45 20 45 45v91c0 19-15 34-34 34H74c-19 0-34-15-34-34V91c0-25 20-45 45-45Z" fill="url(#body)"/>
+  <path d="M72 127h112c12 0 22 10 22 22v36c0 16-13 29-29 29H79c-16 0-29-13-29-29v-36c0-12 10-22 22-22Z" fill="url(#basket)"/>
+  <path d="M76 158h104" stroke="#fed7aa" stroke-width="12" stroke-linecap="round"/>
+  <path d="M86 184h84" stroke="#fed7aa" stroke-width="12" stroke-linecap="round" opacity=".72"/>
+  <rect x="88" y="76" width="80" height="24" rx="12" fill="#f8fafc"/>
+  <circle cx="182" cy="88" r="12" fill="#22c55e"/>
+  <path d="M96 32c-10 13-10 25 0 38M128 25c-12 15-12 30 0 45M160 32c-10 13-10 25 0 38" fill="none" stroke="#f97316" stroke-width="10" stroke-linecap="round"/>
+  <path d="M160 210h55c10 0 18-8 18-18v-34l-73 73v-21Z" fill="#22c55e"/>
+  <text x="211" y="194" transform="rotate(-45 211 194)" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#052e16">BETA</text>
+</svg>

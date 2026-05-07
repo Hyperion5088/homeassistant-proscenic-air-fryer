@@ -3,16 +3,22 @@
     "step": {
       "user": {
         "title": "Proscenic Air Fryer",
-        "description": "Add a stock Proscenic/Tuya air fryer. The password is used once to fetch the Tuya local key and is not stored.",
+        "description": "Add a stock Proscenic/Tuya air fryer. Enter your Proscenic account details and fryer IP address. The password is used once to fetch the Local Key and is not stored.",
         "data": {
-          "username": "Proscenic email",
-          "password": "Proscenic password",
-          "host": "Fryer IP address",
-          "device_id": "Device ID (optional)",
-          "local_key": "Local key (optional)",
-          "region": "Tuya region",
-          "protocol_version": "Tuya protocol version",
-          "temperature_unit": "Temperature unit"
+          "username": "Proscenic Email",
+          "password": "Proscenic Password",
+          "host": "Fryer IP Address",
+          "device_id": "Device ID",
+          "local_key": "Local Key",
+          "region": "Tuya Region",
+          "protocol_version": "Tuya Protocol Version",
+          "temperature_unit": "Temperature Unit"
+        },
+        "sections": {
+          "advanced_options": {
+            "name": "Advanced Options",
+            "description": "Usually leave these unchanged. Device ID and Local Key are fetched automatically when left blank."
+          }
         }
       }
     },
@@ -31,10 +37,10 @@
       "init": {
         "title": "Proscenic Air Fryer Options",
         "data": {
-          "host": "Fryer IP address",
-          "local_key": "Local key",
-          "protocol_version": "Tuya protocol version",
-          "temperature_unit": "Temperature unit"
+          "host": "Fryer IP Address",
+          "local_key": "Local Key",
+          "protocol_version": "Tuya Protocol Version",
+          "temperature_unit": "Temperature Unit"
         }
       }
     },

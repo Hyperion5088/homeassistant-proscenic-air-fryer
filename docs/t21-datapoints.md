@@ -1,5 +1,7 @@
 # Proscenic T21 Datapoints
 
+These datapoints have only been verified against a Proscenic T21. Other Proscenic/Tuya air fryer models may use the same datapoints, but that is not guaranteed.
+
 Source: Proscenic Android app `4.1.0`, package `com.proscenic.smart.robot`, class `com.proscenic.fryer.t21.T21HomeActivity`.
 
 The current Proscenic app uses the Thingclips/Tuya device model internally. For the T21 fryer, `T21HomeActivity.sendOrder(code, value)` builds a map and calls `CommonDevicePresenter.publishDps(map)`.
@@ -45,6 +47,5 @@ Home Assistant should expose start cooking as an explicit button with clear nami
 
 ## Remaining Unknowns
 
-- Device ID and local key/session details for the user's Proscenic/Tuya OEM account.
 - The HTTP/MQTT/WebSocket route the Thingclips SDK uses for account login, device listing, and `publishDps`.
 - Whether SDK certificate pinning blocks HTTPS interception.

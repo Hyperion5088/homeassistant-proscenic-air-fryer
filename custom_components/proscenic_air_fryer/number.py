@@ -41,7 +41,7 @@ async def async_setup_entry(
                 temp_max,
                 temp_step,
                 unit,
-                lambda data: data.cooking_temperature,
+                lambda data: coordinator.display_temperature(data.cooking_temperature),
                 coordinator.async_set_cooking_temperature,
             ),
             ProscenicAirFryerNumber(
@@ -87,7 +87,7 @@ async def async_setup_entry(
 class ProscenicAirFryerNumber(ProscenicAirFryerEntity, NumberEntity):
     """A Proscenic air fryer numeric setting."""
 
-    _attr_mode = NumberMode.BOX
+    _attr_mode = NumberMode.SLIDER
 
     def __init__(
         self,
