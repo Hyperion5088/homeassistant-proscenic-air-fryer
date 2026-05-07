@@ -11,7 +11,7 @@ The current Proscenic app uses the Thingclips/Tuya device model internally. For 
 | DP | Type | Meaning | Evidence |
 | --- | --- | --- | --- |
 | `1` | bool | Power | `turnOnAndOff(boolean)` publishes `1`; `freshViewsWithDps` stores it as `isOn`. |
-| `2` | bool | Start control | `startCooking()` publishes `2=true`; testing confirmed this does not reliably stop or pause an active cook. |
+| `2` | bool | Start / pause control | `startCooking()` and `turnStop()` publish `2=true`; testing confirmed pause did not reliably stop an active cook. |
 | `3` | enum/string | Cooking mode / food preset | `freshViewsWithDps` stores it as `mode`; observed values are listed below. |
 | `5` | enum/string | Working status | `freshViewsWithDps` stores it as `status`; examples include `off`, `stop`, `cooking`, `appointment`, `warm`, `end`. |
 | `6` | integer | Appointment/delay time | `startCooking()` publishes appointment time when pre-cook is enabled. |
@@ -58,9 +58,9 @@ Safe command candidates:
 
 Potentially hazardous command:
 
-- start cooking: `{ "2": true }`
+- start/pause cooking: `{ "2": true }`
 
-Home Assistant exposes start cooking as an explicit button with clear naming, not as an automatically restored switch. Use DP1 power off as the tested stop path. Preset temperature/time edits are session-only and are not persisted back to the preset by the fryer.
+Home Assistant exposes start/pause cooking as an explicit button with clear naming, not as an automatically restored switch. Use DP1 power off as the tested stop path. Preset temperature/time edits are session-only and are not persisted back to the preset by the fryer.
 
 ## Remaining Unknowns
 

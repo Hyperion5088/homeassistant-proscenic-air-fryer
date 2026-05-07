@@ -43,6 +43,7 @@ async def async_setup_entry(
                 unit,
                 lambda data: coordinator.display_temperature(data.cooking_temperature),
                 coordinator.async_set_cooking_temperature,
+                NumberMode.SLIDER,
             ),
             ProscenicAirFryerNumber(
                 coordinator,
@@ -55,6 +56,7 @@ async def async_setup_entry(
                 "min",
                 lambda data: data.cooking_time,
                 coordinator.async_set_cooking_time,
+                NumberMode.SLIDER,
             ),
             ProscenicAirFryerNumber(
                 coordinator,
@@ -67,6 +69,7 @@ async def async_setup_entry(
                 "min",
                 lambda data: data.warm_time,
                 coordinator.async_set_warm_time,
+                NumberMode.SLIDER,
             ),
             ProscenicAirFryerNumber(
                 coordinator,
@@ -79,6 +82,63 @@ async def async_setup_entry(
                 "min",
                 lambda data: data.delayed_time,
                 coordinator.async_set_delayed_time,
+                NumberMode.SLIDER,
+            ),
+            ProscenicAirFryerNumber(
+                coordinator,
+                "cooking_temperature_input",
+                "Cooking Temperature Input",
+                "mdi:thermometer",
+                temp_min,
+                temp_max,
+                temp_step,
+                unit,
+                lambda data: coordinator.display_temperature(data.cooking_temperature),
+                coordinator.async_set_cooking_temperature,
+                NumberMode.BOX,
+                enabled_default=False,
+            ),
+            ProscenicAirFryerNumber(
+                coordinator,
+                "cooking_time_input",
+                "Cooking Time Input",
+                "mdi:timer-edit",
+                1,
+                60,
+                1,
+                "min",
+                lambda data: data.cooking_time,
+                coordinator.async_set_cooking_time,
+                NumberMode.BOX,
+                enabled_default=False,
+            ),
+            ProscenicAirFryerNumber(
+                coordinator,
+                "warm_time_input",
+                "Keep Warm Time Input",
+                "mdi:timer-edit-outline",
+                1,
+                60,
+                1,
+                "min",
+                lambda data: data.warm_time,
+                coordinator.async_set_warm_time,
+                NumberMode.BOX,
+                enabled_default=False,
+            ),
+            ProscenicAirFryerNumber(
+                coordinator,
+                "delayed_time_input",
+                "Delayed Time Input",
+                "mdi:timer-edit-outline",
+                0,
+                720,
+                1,
+                "min",
+                lambda data: data.delayed_time,
+                coordinator.async_set_delayed_time,
+                NumberMode.BOX,
+                enabled_default=False,
             ),
         ]
     )
@@ -86,8 +146,6 @@ async def async_setup_entry(
 
 class ProscenicAirFryerNumber(ProscenicAirFryerEntity, NumberEntity):
     """A Proscenic air fryer numeric setting."""
-
-    _attr_mode = NumberMode.SLIDER
 
     def __init__(
         self,
@@ -101,11 +159,15 @@ class ProscenicAirFryerNumber(ProscenicAirFryerEntity, NumberEntity):
         unit: str,
         value_fn: Callable[[Any], int | None],
         set_fn: Callable[[int], Any],
+        mode: NumberMode,
+        enabled_default: bool = True,
     ) -> None:
         """Initialize the number."""
         super().__init__(coordinator, suffix)
         self._attr_name = name
         self._attr_icon = icon
+        self._attr_mode = mode
+        self._attr_entity_registry_enabled_default = enabled_default
         self._attr_native_min_value = minimum
         self._attr_native_max_value = maximum
         self._attr_native_step = step
