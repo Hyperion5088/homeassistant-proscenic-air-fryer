@@ -49,6 +49,7 @@ The repository includes HACS branding assets in `brand/` and Home Assistant loca
 - cooking time
 - keep warm time
 - delayed time
+- preset selector
 - status, mode, temperature, remaining time, and diagnostic sensors
 - disabled-by-default diagnostic entities for device name, device ID, local key, category, product ID, UUID, initial DPS, protocol, region, discovery method, scan subnet, IP address, raw DPS, and unknown datapoints
 - optional IP discovery by Tuya LAN broadcast or user-provided subnet scan

@@ -144,6 +144,10 @@ class ProscenicAirFryerCoordinator(DataUpdateCoordinator[ProscenicAirFryerData])
         """Enable or disable delayed cook."""
         await self._set_dp(DP_DELAYED_COOK, on)
 
+    async def async_set_mode(self, value: str) -> None:
+        """Set cooking mode/preset."""
+        await self._set_dp(DP_MODE, value)
+
     async def async_set_cooking_temperature(self, value: int) -> None:
         """Set cooking temperature."""
         await self._set_dp(DP_COOK_TEMP, self.device_temperature(value))

@@ -26,6 +26,7 @@ DEFAULT_SCAN_INTERVAL_SECONDS = 15
 PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.NUMBER,
+    Platform.SELECT,
     Platform.SENSOR,
     Platform.SWITCH,
 ]

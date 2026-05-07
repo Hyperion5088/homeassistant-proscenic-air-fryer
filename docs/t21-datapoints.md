@@ -48,6 +48,7 @@ The app sends these commands through `publishDps`, not through the older Proscen
 Safe command candidates:
 
 - power on/off: `{ "1": true/false }`
+- select preset: `{ "3": "<mode code>" }`
 - set temperature: `{ "103": <fahrenheit integer> }`
 - set cooking time: `{ "7": <minutes> }`
 - enable/disable keep warm: `{ "104": true/false }`
