@@ -43,22 +43,57 @@ from .const import (
 
 REGIONS = ["eu", "us", "cn", "in"]
 PROTOCOL_VERSIONS = ["3.3", "3.4", "3.5"]
-DISCOVERY_METHODS = ["broadcast", "subnet"]
-DISCOVERY_METHOD_SELECTOR = SelectSelector(
+REGION_SELECTOR = SelectSelector(
     SelectSelectorConfig(
         options=[
-            {
-                "value": "broadcast",
-                "label": "Broadcast - listen for Tuya LAN announcements",
-            },
-            {
-                "value": "subnet",
-                "label": "Subnet scan - scan a CIDR range",
-            },
+            {"value": "eu", "label": "Europe"},
+            {"value": "us", "label": "United States"},
+            {"value": "cn", "label": "China"},
+            {"value": "in", "label": "India"},
+        ]
+    )
+)
+PROTOCOL_VERSION_SELECTOR = SelectSelector(
+    SelectSelectorConfig(
+        options=[
+            {"value": "3.3", "label": "3.3 - most Proscenic air fryers"},
+            {"value": "3.4", "label": "3.4"},
+            {"value": "3.5", "label": "3.5"},
+        ]
+    )
+)
+TEMPERATURE_UNIT_SELECTOR = SelectSelector(
+    SelectSelectorConfig(
+        options=[
+            {"value": "F", "label": "Fahrenheit"},
+            {"value": "C", "label": "Celsius"},
         ]
     )
 )
 CONF_ADVANCED_OPTIONS = "advanced_options"
+
+
+def _host_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
+    """Return a schema for manual IP entry."""
+    defaults = defaults or {}
+    return vol.Schema(
+        {
+            vol.Required(CONF_HOST, default=defaults.get(CONF_HOST, "")): str,
+        }
+    )
+
+
+def _subnet_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
+    """Return a schema for subnet scanning."""
+    defaults = defaults or {}
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_SCAN_SUBNET,
+                default=defaults.get(CONF_SCAN_SUBNET, ""),
+            ): str,
+        }
+    )
 
 
 def _cloud_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
@@ -72,38 +107,66 @@ def _cloud_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
             ): str,
             vol.Required(CONF_PASSWORD): str,
             vol.Optional(CONF_HOST, default=defaults.get(CONF_HOST, "")): str,
+            vol.Required(
+                CONF_TEMPERATURE_UNIT,
+                default=defaults.get(
+                    CONF_TEMPERATURE_UNIT,
+                    DEFAULT_TEMPERATURE_UNIT,
+                ),
+            ): TEMPERATURE_UNIT_SELECTOR,
             vol.Optional(CONF_ADVANCED_OPTIONS): section(
                 vol.Schema(
                     {
                         vol.Optional(
-                            CONF_DISCOVERY_METHOD,
-                            default=defaults.get(
-                                CONF_DISCOVERY_METHOD,
-                                DEFAULT_DISCOVERY_METHOD,
-                            ),
-                        ): DISCOVERY_METHOD_SELECTOR,
-                        vol.Optional(
-                            CONF_SCAN_SUBNET,
-                            default=defaults.get(CONF_SCAN_SUBNET, ""),
-                        ): str,
-                        vol.Optional(
                             CONF_REGION,
                             default=defaults.get(CONF_REGION, DEFAULT_REGION),
-                        ): vol.In(REGIONS),
+                        ): REGION_SELECTOR,
                         vol.Optional(
                             CONF_PROTOCOL_VERSION,
                             default=defaults.get(
                                 CONF_PROTOCOL_VERSION,
                                 DEFAULT_PROTOCOL_VERSION,
                             ),
-                        ): vol.In(PROTOCOL_VERSIONS),
+                        ): PROTOCOL_VERSION_SELECTOR,
+                    }
+                ),
+                {"collapsed": True},
+            ),
+        }
+    )
+
+
+def _cloud_discovery_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
+    """Return the cloud setup schema for Home Assistant discovered devices."""
+    defaults = defaults or {}
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_USERNAME,
+                default=defaults.get(CONF_USERNAME, ""),
+            ): str,
+            vol.Required(CONF_PASSWORD): str,
+            vol.Required(
+                CONF_TEMPERATURE_UNIT,
+                default=defaults.get(
+                    CONF_TEMPERATURE_UNIT,
+                    DEFAULT_TEMPERATURE_UNIT,
+                ),
+            ): TEMPERATURE_UNIT_SELECTOR,
+            vol.Optional(CONF_ADVANCED_OPTIONS): section(
+                vol.Schema(
+                    {
                         vol.Optional(
-                            CONF_TEMPERATURE_UNIT,
+                            CONF_REGION,
+                            default=defaults.get(CONF_REGION, DEFAULT_REGION),
+                        ): REGION_SELECTOR,
+                        vol.Optional(
+                            CONF_PROTOCOL_VERSION,
                             default=defaults.get(
-                                CONF_TEMPERATURE_UNIT,
-                                DEFAULT_TEMPERATURE_UNIT,
+                                CONF_PROTOCOL_VERSION,
+                                DEFAULT_PROTOCOL_VERSION,
                             ),
-                        ): vol.In(["F", "C"]),
+                        ): PROTOCOL_VERSION_SELECTOR,
                     }
                 ),
                 {"collapsed": True},
@@ -126,34 +189,23 @@ def _manual_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
                 default=defaults.get(CONF_LOCAL_KEY, ""),
             ): str,
             vol.Optional(CONF_HOST, default=defaults.get(CONF_HOST, "")): str,
+            vol.Required(
+                CONF_TEMPERATURE_UNIT,
+                default=defaults.get(
+                    CONF_TEMPERATURE_UNIT,
+                    DEFAULT_TEMPERATURE_UNIT,
+                ),
+            ): TEMPERATURE_UNIT_SELECTOR,
             vol.Optional(CONF_ADVANCED_OPTIONS): section(
                 vol.Schema(
                     {
-                        vol.Optional(
-                            CONF_DISCOVERY_METHOD,
-                            default=defaults.get(
-                                CONF_DISCOVERY_METHOD,
-                                DEFAULT_DISCOVERY_METHOD,
-                            ),
-                        ): DISCOVERY_METHOD_SELECTOR,
-                        vol.Optional(
-                            CONF_SCAN_SUBNET,
-                            default=defaults.get(CONF_SCAN_SUBNET, ""),
-                        ): str,
                         vol.Optional(
                             CONF_PROTOCOL_VERSION,
                             default=defaults.get(
                                 CONF_PROTOCOL_VERSION,
                                 DEFAULT_PROTOCOL_VERSION,
                             ),
-                        ): vol.In(PROTOCOL_VERSIONS),
-                        vol.Optional(
-                            CONF_TEMPERATURE_UNIT,
-                            default=defaults.get(
-                                CONF_TEMPERATURE_UNIT,
-                                DEFAULT_TEMPERATURE_UNIT,
-                            ),
-                        ): vol.In(["F", "C"]),
+                        ): PROTOCOL_VERSION_SELECTOR,
                     }
                 ),
                 {"collapsed": True},
@@ -178,7 +230,7 @@ def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
                     CONF_TEMPERATURE_UNIT,
                     DEFAULT_TEMPERATURE_UNIT,
                 ),
-            ): vol.In(["F", "C"]),
+            ): TEMPERATURE_UNIT_SELECTOR,
         }
     )
 
@@ -187,6 +239,12 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Proscenic air fryers."""
 
     VERSION = 2
+
+    def __init__(self) -> None:
+        """Initialize the config flow."""
+        self._discovery_defaults: dict[str, Any] = {}
+        self._pending_setup_data: dict[str, Any] = {}
+        self._discovered_setup_data: dict[str, Any] = {}
 
     async def async_step_user(
         self,
@@ -209,6 +267,18 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             schema_fn=_cloud_schema,
         )
 
+    async def async_step_dhcp_cloud(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Set up a Home Assistant discovered fryer using cloud lookup."""
+        return await self._async_step_setup(
+            user_input,
+            defaults=self._discovery_defaults,
+            step_id="dhcp_cloud",
+            schema_fn=_cloud_discovery_schema,
+        )
+
     async def async_step_manual(
         self,
         user_input: dict[str, Any] | None = None,
@@ -227,9 +297,8 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a DHCP discovered fryer candidate."""
         host = getattr(discovery_info, "ip", None)
         mac_address = _normalize_mac(getattr(discovery_info, "macaddress", None))
-        hostname = getattr(discovery_info, "hostname", None)
         self.context["title_placeholders"] = {
-            "name": hostname or host or "Proscenic Air Fryer"
+            "name": "Proscenic Air Fryer"
         }
         if mac_address:
             await self.async_set_unique_id(mac_address)
@@ -240,11 +309,12 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_MAC_ADDRESS: mac_address or "",
             CONF_DISCOVERY_METHOD: DEFAULT_DISCOVERY_METHOD,
         }
+        self._discovery_defaults = defaults
         return await self._async_step_setup(
             None,
             defaults=defaults,
-            step_id="cloud",
-            schema_fn=_cloud_schema,
+            step_id="dhcp_cloud",
+            schema_fn=_cloud_discovery_schema,
         )
 
     async def _async_step_setup(
@@ -259,7 +329,17 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             data = _clean_input({**(defaults or {}), **user_input})
             try:
-                entry_data = await self.hass.async_add_executor_job(_resolve_setup, data)
+                if data[CONF_HOST]:
+                    entry_data = await self.hass.async_add_executor_job(
+                        _resolve_setup,
+                        data,
+                    )
+                else:
+                    self._pending_setup_data = await self.hass.async_add_executor_job(
+                        _prepare_setup,
+                        data,
+                    )
+                    return await self.async_step_discovery()
             except ProscenicAuthenticationError:
                 errors["base"] = "invalid_auth"
             except ProscenicDiscoveryError:
@@ -286,6 +366,129 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "host": schema_defaults.get(CONF_HOST, ""),
             },
+        )
+
+    async def async_step_discovery(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Choose how to find the fryer IP address."""
+        return self.async_show_menu(
+            step_id="discovery",
+            menu_options=["broadcast_scan", "subnet_scan", "manual_ip"],
+        )
+
+    async def async_step_broadcast_scan(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Run a Tuya broadcast scan."""
+        errors: dict[str, str] = {}
+        try:
+            data = await self.hass.async_add_executor_job(
+                _discover_setup,
+                self._pending_setup_data,
+                "broadcast",
+                None,
+            )
+        except ProscenicDiscoveryError:
+            errors["base"] = "cannot_discover"
+        except Exception:  # noqa: BLE001
+            errors["base"] = "unknown"
+        else:
+            self._discovered_setup_data = data
+            return await self.async_step_discovery_result()
+
+        return self.async_show_form(
+            step_id="broadcast_scan",
+            data_schema=vol.Schema({}),
+            errors=errors,
+        )
+
+    async def async_step_subnet_scan(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Run a user-requested subnet scan."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            data = _clean_input({**self._pending_setup_data, **user_input})
+            try:
+                data = await self.hass.async_add_executor_job(
+                    _discover_setup,
+                    data,
+                    "subnet",
+                    data.get(CONF_SCAN_SUBNET) or None,
+                )
+            except ProscenicDiscoveryError:
+                errors["base"] = "cannot_discover"
+            except Exception:  # noqa: BLE001
+                errors["base"] = "unknown"
+            else:
+                self._discovered_setup_data = data
+                return await self.async_step_discovery_result()
+
+        return self.async_show_form(
+            step_id="subnet_scan",
+            data_schema=_subnet_schema(self._pending_setup_data),
+            errors=errors,
+        )
+
+    async def async_step_manual_ip(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Allow the user to type the fryer IP address."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            data = _clean_input({**self._pending_setup_data, **user_input})
+            try:
+                return await self._async_create_from_data(data)
+            except ProscenicLocalError:
+                errors["base"] = "cannot_connect"
+            except Exception:  # noqa: BLE001
+                errors["base"] = "unknown"
+
+        return self.async_show_form(
+            step_id="manual_ip",
+            data_schema=_host_schema(self._pending_setup_data),
+            errors=errors,
+        )
+
+    async def async_step_discovery_result(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Confirm the discovered fryer address."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                return await self._async_create_from_data(self._discovered_setup_data)
+            except ProscenicLocalError:
+                errors["base"] = "cannot_connect"
+            except Exception:  # noqa: BLE001
+                errors["base"] = "unknown"
+
+        return self.async_show_form(
+            step_id="discovery_result",
+            data_schema=vol.Schema({}),
+            errors=errors,
+            description_placeholders={
+                "host": self._discovered_setup_data.get(CONF_HOST, ""),
+            },
+        )
+
+    async def _async_create_from_data(
+        self,
+        data: dict[str, Any],
+    ) -> config_entries.ConfigFlowResult:
+        """Test local connectivity and create the config entry."""
+        entry_data = await self.hass.async_add_executor_job(_finalize_setup, data)
+        await self.async_set_unique_id(entry_data[CONF_DEVICE_ID])
+        self._abort_if_unique_id_configured()
+        return self.async_create_entry(
+            title=entry_data.get("name", "Proscenic Air Fryer"),
+            data=entry_data,
         )
 
     @staticmethod
@@ -399,6 +602,18 @@ def _resolve_options(
 
 def _resolve_setup(data: dict[str, Any]) -> dict[str, Any]:
     """Resolve setup data, fetching a local key when needed."""
+    data = _prepare_setup(data)
+    if not data[CONF_HOST]:
+        data = _discover_setup(
+            data,
+            data[CONF_DISCOVERY_METHOD],
+            data.get(CONF_SCAN_SUBNET) or None,
+        )
+    return _finalize_setup(data)
+
+
+def _prepare_setup(data: dict[str, Any]) -> dict[str, Any]:
+    """Fetch cloud-derived setup data when needed."""
     device_id = data.get(CONF_DEVICE_ID) or None
     local_key = data.get(CONF_LOCAL_KEY) or None
     device = None
@@ -413,31 +628,57 @@ def _resolve_setup(data: dict[str, Any]) -> dict[str, Any]:
         local_key = device.local_key
     if not device_id or not local_key:
         raise ProscenicApiError("Device ID and local key are required")
+    return {
+        **data,
+        CONF_DEVICE_ID: device_id,
+        CONF_LOCAL_KEY: local_key,
+        "name": device.name if device else f"Proscenic {device_id[-6:]}",
+        "category": device.category if device else None,
+        "uuid": device.uuid if device else None,
+        "product_id": device.product_id if device else None,
+        "cloud_dps": device.dps if device else None,
+    }
 
+
+def _discover_setup(
+    data: dict[str, Any],
+    discovery_method: str,
+    scan_subnet: str | None,
+) -> dict[str, Any]:
+    """Discover the fryer IP address and return updated setup data."""
     discovered = None
     if not data[CONF_HOST]:
         discovered = _discover_local_device(
-            device_id,
-            local_key,
-            data[CONF_DISCOVERY_METHOD],
-            data.get(CONF_SCAN_SUBNET) or None,
+            data[CONF_DEVICE_ID],
+            data[CONF_LOCAL_KEY],
+            discovery_method,
+            scan_subnet,
         )
         if discovered is None:
             raise ProscenicDiscoveryError(
-                f"Could not discover Tuya device {device_id}"
+                f"Could not discover Tuya device {data[CONF_DEVICE_ID]}"
             )
-        data[CONF_HOST] = discovered.host
+    return {
+        **data,
+        CONF_HOST: discovered.host if discovered else data[CONF_HOST],
+        CONF_DISCOVERY_METHOD: discovery_method,
+        CONF_SCAN_SUBNET: scan_subnet,
+        "discovery": discovered.raw if discovered else data.get("discovery"),
+    }
 
+
+def _finalize_setup(data: dict[str, Any]) -> dict[str, Any]:
+    """Test local connectivity and build config entry data."""
     raw_status = test_local_device(
-        device_id,
+        data[CONF_DEVICE_ID],
         data[CONF_HOST],
-        local_key,
+        data[CONF_LOCAL_KEY],
         data[CONF_PROTOCOL_VERSION],
     )
     return {
-        CONF_DEVICE_ID: device_id,
+        CONF_DEVICE_ID: data[CONF_DEVICE_ID],
         CONF_HOST: data[CONF_HOST],
-        CONF_LOCAL_KEY: local_key,
+        CONF_LOCAL_KEY: data[CONF_LOCAL_KEY],
         CONF_DISCOVERY_METHOD: data[CONF_DISCOVERY_METHOD],
         CONF_SCAN_SUBNET: data.get(CONF_SCAN_SUBNET),
         CONF_MAC_ADDRESS: data.get(CONF_MAC_ADDRESS),
@@ -445,12 +686,12 @@ def _resolve_setup(data: dict[str, Any]) -> dict[str, Any]:
         CONF_REGION: data[CONF_REGION],
         CONF_TEMPERATURE_UNIT: data[CONF_TEMPERATURE_UNIT],
         CONF_USERNAME: data.get(CONF_USERNAME),
-        "name": device.name if device else f"Proscenic {device_id[-6:]}",
-        "category": device.category if device else None,
-        "uuid": device.uuid if device else None,
-        "product_id": device.product_id if device else None,
+        "name": data.get("name") or f"Proscenic {data[CONF_DEVICE_ID][-6:]}",
+        "category": data.get("category"),
+        "uuid": data.get("uuid"),
+        "product_id": data.get("product_id"),
         "initial_dps": raw_status,
-        "discovery": discovered.raw if discovered else None,
+        "discovery": data.get("discovery"),
     }
 
 

@@ -11,61 +11,111 @@
       },
       "cloud": {
         "title": "Proscenic Cloud Lookup",
-        "description": "Enter your Proscenic account details so the integration can fetch the Device ID and Local Key. This is normally required at least once because those local Tuya values are not printed on the fryer. Enter the Fryer IP Address if you know it, or leave it blank and use Advanced Options for broadcast or subnet discovery. For subnet scan, enter the network in IP/CIDR format, for example 192.168.13.0/24. The password is used once and is not stored.",
+        "description": "Enter your Proscenic account details so the integration can fetch the Device ID and Local Key. This is normally required at least once because those local Tuya values are not printed on the fryer. Enter the Fryer IP Address if you know it, or leave it blank to choose Broadcast Scan, Subnet Scan, or Manual IP on the next page. The password is used once and is not stored.",
         "data": {
           "username": "Proscenic Email",
           "password": "Proscenic Password",
           "host": "Fryer IP Address",
-          "discovery_method": "Discovery Method",
-          "scan_subnet": "Scan Subnet",
-          "region": "Tuya Region",
-          "protocol_version": "Tuya Protocol Version",
+          "region": "Account Region",
+          "protocol_version": "Connection Protocol",
           "temperature_unit": "Temperature Unit"
         },
         "data_description": {
           "username": "Email address used to sign in to the Proscenic app.",
           "password": "Used once during setup to fetch the Tuya Local Key. It is not stored.",
-          "host": "Optional. Enter the fryer IP address manually, or leave blank to discover it by broadcast or subnet scan.",
-          "discovery_method": "Used only when Fryer IP Address is blank. Broadcast listens for Tuya LAN announcements; Subnet scan probes the IP/CIDR range below.",
-          "scan_subnet": "Required only for Subnet scan. Enter a subnet in IP/CIDR format, for example 192.168.13.0/24.",
+          "host": "Optional. Enter the fryer IP address manually, or leave blank to choose a discovery method on the next page.",
           "region": "Tuya data-center region used by the Proscenic account.",
           "protocol_version": "Local Tuya protocol version. The tested T21 uses 3.3.",
           "temperature_unit": "Display unit used by Home Assistant. The fryer reports raw temperatures in Fahrenheit."
         },
         "sections": {
           "advanced_options": {
-            "name": "Advanced Options",
-            "description": "Cloud lookup and discovery settings. The Device ID and Local Key are fetched from the Proscenic cloud. Use Subnet scan with an IP/CIDR range such as 192.168.13.0/24 when broadcasts do not cross VLANs."
+            "name": "Connection Settings",
+            "description": "Usually leave these unchanged unless the cloud lookup or local connection fails."
+          }
+        }
+      },
+      "dhcp_cloud": {
+        "title": "Proscenic Cloud Lookup",
+        "description": "Home Assistant discovered this fryer at {host}. The IP address is fixed for this setup flow. Enter your Proscenic account details so the integration can fetch the Device ID and Local Key. The password is used once and is not stored.",
+        "data": {
+          "username": "Proscenic Email",
+          "password": "Proscenic Password",
+          "region": "Account Region",
+          "protocol_version": "Connection Protocol",
+          "temperature_unit": "Temperature Unit"
+        },
+        "data_description": {
+          "username": "Email address used to sign in to the Proscenic app.",
+          "password": "Used once during setup to fetch the Local Key. It is not stored.",
+          "region": "Region used by the Proscenic account.",
+          "protocol_version": "Local connection version. The tested T21 uses 3.3.",
+          "temperature_unit": "Display unit used by Home Assistant. The fryer reports raw temperatures in Fahrenheit."
+        },
+        "sections": {
+          "advanced_options": {
+            "name": "Connection Settings",
+            "description": "Usually leave these unchanged unless the cloud lookup or local connection fails."
           }
         }
       },
       "manual": {
         "title": "Manual Local Setup",
-        "description": "Enter the Tuya Device ID and Local Key yourself. This path is fully local and does not use Proscenic cloud credentials, but it only works if you already have those values. Most users will need to use Cloud lookup first, then can use manual setup later. Enter the Fryer IP Address if you know it, or leave it blank and use Advanced Options for broadcast or subnet discovery. For subnet scan, enter the network in IP/CIDR format, for example 192.168.13.0/24.",
+        "description": "Enter the local Device ID and Local Key yourself. This path is fully local and does not use Proscenic cloud credentials, but it only works if you already have those values. Most users will need to use Cloud lookup first, then can use manual setup later. Enter the Fryer IP Address if you know it, or leave it blank to choose Broadcast Scan, Subnet Scan, or Manual IP on the next page.",
         "data": {
-          "device_id": "Device ID",
-          "local_key": "Local Key",
+          "device_id": "Local Device ID",
+          "local_key": "Local Device Key",
           "host": "Fryer IP Address",
-          "discovery_method": "Discovery Method",
-          "scan_subnet": "Scan Subnet",
-          "protocol_version": "Tuya Protocol Version",
+          "protocol_version": "Connection Protocol",
           "temperature_unit": "Temperature Unit"
         },
         "data_description": {
-          "device_id": "Tuya device ID for the fryer.",
-          "local_key": "Tuya Local Key for the fryer.",
-          "host": "Optional. Enter the fryer IP address manually, or leave blank to discover it by broadcast or subnet scan.",
-          "discovery_method": "Used only when Fryer IP Address is blank. Broadcast listens for Tuya LAN announcements; Subnet scan probes the IP/CIDR range below.",
-          "scan_subnet": "Required only for Subnet scan. Enter a subnet in IP/CIDR format, for example 192.168.13.0/24.",
-          "protocol_version": "Local Tuya protocol version. The tested T21 uses 3.3.",
+          "device_id": "Local Tuya device ID for the fryer.",
+          "local_key": "Local Tuya key for the fryer.",
+          "host": "Optional. Enter the fryer IP address manually, or leave blank to choose a discovery method on the next page.",
+          "protocol_version": "Local connection version. The tested T21 uses 3.3.",
           "temperature_unit": "Display unit used by Home Assistant. The fryer reports raw temperatures in Fahrenheit."
         },
         "sections": {
           "advanced_options": {
-            "name": "Advanced Options",
-            "description": "Discovery and display settings. Use Subnet scan with an IP/CIDR range such as 192.168.13.0/24 when broadcasts do not cross VLANs."
+            "name": "Connection Settings",
+            "description": "Usually leave this unchanged unless the local connection fails."
           }
         }
+      },
+      "discovery": {
+        "title": "Find Fryer IP Address",
+        "description": "Choose how Home Assistant should find the fryer on your network.",
+        "menu_options": {
+          "broadcast_scan": "Broadcast Scan",
+          "subnet_scan": "Subnet Scan",
+          "manual_ip": "Enter IP Address Manually"
+        }
+      },
+      "broadcast_scan": {
+        "title": "Broadcast Scan",
+        "description": "Listen for Tuya LAN announcements from the fryer. This works only when Home Assistant can receive broadcasts from the fryer network. Submit to scan again."
+      },
+      "subnet_scan": {
+        "title": "Subnet Scan",
+        "description": "Scan a network range for the fryer. Use IP/CIDR format, for example 192.168.13.0/24.",
+        "data": {
+          "scan_subnet": "Subnet to Scan"
+        },
+        "data_description": {
+          "scan_subnet": "Network range in IP/CIDR format, for example 192.168.13.0/24."
+        }
+      },
+      "manual_ip": {
+        "title": "Enter IP Address Manually",
+        "description": "Enter the fryer IP address.",
+        "data": {
+          "host": "Fryer IP Address"
+        }
+      },
+      "discovery_result": {
+        "title": "Fryer Found",
+        "description": "Found the fryer at {host}. Submit to save this device."
       }
     },
     "error": {

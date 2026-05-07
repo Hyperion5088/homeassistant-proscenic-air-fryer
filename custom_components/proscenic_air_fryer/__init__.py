@@ -14,8 +14,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     coordinator = ProscenicAirFryerCoordinator(hass, entry)
     hass.data[DOMAIN][entry.entry_id] = coordinator
-    await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await coordinator.async_config_entry_first_refresh()
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     return True
 
