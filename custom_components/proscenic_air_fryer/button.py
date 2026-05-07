@@ -23,7 +23,7 @@ async def async_setup_entry(
     async_add_entities(
         [
             ProscenicStatusButton(coordinator),
-            ProscenicStartStopButton(coordinator),
+            ProscenicStartButton(coordinator),
         ]
     )
 
@@ -44,16 +44,16 @@ class ProscenicStatusButton(ProscenicAirFryerEntity, ButtonEntity):
         await self.coordinator.async_status()
 
 
-class ProscenicStartStopButton(ProscenicAirFryerEntity, ButtonEntity):
-    """Send the T21 start/pause command."""
+class ProscenicStartButton(ProscenicAirFryerEntity, ButtonEntity):
+    """Send the T21 start command."""
 
-    _attr_icon = "mdi:play-pause"
-    _attr_name = "Start/Pause Cooking"
+    _attr_icon = "mdi:play"
+    _attr_name = "Start Cooking"
 
     def __init__(self, coordinator: ProscenicAirFryerCoordinator) -> None:
         """Initialize the button."""
         super().__init__(coordinator, "start_stop")
 
     async def async_press(self) -> None:
-        """Send the pulse-style start/pause datapoint."""
-        await self.coordinator.async_set_start_pause(True)
+        """Send the pulse-style start datapoint."""
+        await self.coordinator.async_start_cooking()

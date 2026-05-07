@@ -56,7 +56,7 @@ The repository includes HACS branding assets in `brand/` and Home Assistant loca
 ## Exposed Controls
 
 - power switch
-- start/pause cooking button
+- start cooking button
 - keep warm switch
 - delayed cook switch
 - cooking temperature
@@ -73,6 +73,6 @@ Starting a cooking appliance remotely has real-world safety implications. Use au
 
 Known T21 behavior:
 
-- The `Start/Pause Cooking` button sends the app's start/pause datapoint. Pause did not reliably stop an active cook in initial testing.
-- Turning power off during cooking works as the current stop path.
+- The `Start Cooking` button sends the app's start datapoint. It starts cooking even if the fryer previously reported power off.
+- Pause has not worked reliably on the tested T21. Turning power off during cooking is the current stop path.
 - Preset temperature/time edits can be changed for the current session, but the fryer does not persist those edits back to the preset.

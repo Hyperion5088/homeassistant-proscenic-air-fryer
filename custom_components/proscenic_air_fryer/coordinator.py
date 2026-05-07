@@ -44,7 +44,7 @@ LOGGER = logging.getLogger(__name__)
 
 DP_FIELDS = {
     DP_POWER: "power",
-    DP_START: "start_pause",
+    DP_START: "start_command",
     DP_KEEP_WARM: "keep_warm",
     DP_DELAYED_COOK: "delayed_cook",
     DP_MODE: "mode",
@@ -60,7 +60,7 @@ class ProscenicAirFryerData:
     """Normalized air fryer state."""
 
     power: bool | None = None
-    start_pause: bool | None = None
+    start_command: bool | None = None
     keep_warm: bool | None = None
     delayed_cook: bool | None = None
     mode: str | None = None
@@ -133,9 +133,9 @@ class ProscenicAirFryerCoordinator(DataUpdateCoordinator[ProscenicAirFryerData])
         """Set the air fryer power."""
         await self._set_dp(DP_POWER, on)
 
-    async def async_set_start_pause(self, on: bool) -> None:
-        """Start or stop/pause cooking."""
-        await self._set_dp(DP_START, on)
+    async def async_start_cooking(self) -> None:
+        """Start cooking."""
+        await self._set_dp(DP_START, True)
 
     async def async_set_keep_warm(self, on: bool) -> None:
         """Enable or disable keep warm."""
@@ -214,7 +214,7 @@ def _normalize(raw: dict[str, Any]) -> ProscenicAirFryerData:
     """Normalize Tuya DPS values into coordinator data."""
     return ProscenicAirFryerData(
         power=_bool(raw.get(DP_POWER)),
-        start_pause=_bool(raw.get(DP_START)),
+        start_command=_bool(raw.get(DP_START)),
         keep_warm=_bool(raw.get(DP_KEEP_WARM)),
         delayed_cook=_bool(raw.get(DP_DELAYED_COOK)),
         mode=_str(raw.get(DP_MODE)),

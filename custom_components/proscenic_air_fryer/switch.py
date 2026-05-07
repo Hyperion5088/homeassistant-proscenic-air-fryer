@@ -28,7 +28,8 @@ async def async_setup_entry(
                 "power",
                 "Power",
                 "mdi:power",
-                lambda data: data.power,
+                lambda data: data.status in {"cooking", "appointment", "warm"}
+                or data.power,
                 coordinator.async_set_power,
             ),
             ProscenicAirFryerSwitch(
