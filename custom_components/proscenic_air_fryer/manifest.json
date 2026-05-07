@@ -1,0 +1,15 @@
+{
+  "domain": "proscenic_air_fryer",
+  "name": "Proscenic Air Fryer",
+  "codeowners": [
+    "@Hyperion5088"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/Hyperion5088/homeassistant-proscenic-air-fryer",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Hyperion5088/homeassistant-proscenic-air-fryer/issues",
+  "requirements": [
+    "tinytuya==1.18.0"
+  ],
+  "version": "0.2.0-beta.1"
+}

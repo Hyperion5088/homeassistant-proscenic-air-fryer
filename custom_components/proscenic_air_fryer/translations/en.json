@@ -1,0 +1,46 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Proscenic Air Fryer",
+        "description": "Add a stock Proscenic/Tuya air fryer. The password is used once to fetch the Tuya local key and is not stored.",
+        "data": {
+          "username": "Proscenic email",
+          "password": "Proscenic password",
+          "host": "Fryer IP address",
+          "device_id": "Device ID (optional)",
+          "local_key": "Local key (optional)",
+          "region": "Tuya region",
+          "protocol_version": "Tuya protocol version",
+          "temperature_unit": "Temperature unit"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the fryer locally. Check the IP, VLAN/firewall rules, local key, and protocol version.",
+      "cannot_fetch_key": "Could not fetch the local key from the Proscenic account.",
+      "invalid_auth": "The Proscenic credentials were rejected.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This air fryer is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Proscenic Air Fryer Options",
+        "data": {
+          "host": "Fryer IP address",
+          "local_key": "Local key",
+          "protocol_version": "Tuya protocol version",
+          "temperature_unit": "Temperature unit"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the fryer locally.",
+      "unknown": "Unexpected error."
+    }
+  }
+}

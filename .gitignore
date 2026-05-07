@@ -1,0 +1,9 @@
+Raw_*.folder/
+*.har
+*.chlsj
+*.proxymanlog
+snapshot.json
+.DS_Store
+__pycache__/
+*.py[cod]
+
