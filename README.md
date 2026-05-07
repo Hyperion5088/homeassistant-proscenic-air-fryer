@@ -15,7 +15,21 @@ You need:
 - Home Assistant network access to the fryer, usually TCP `6668`
 
 During setup the password is used once to fetch the local key and is not stored in the config entry.
-Leave the fryer IP address blank to discover the device. Broadcast discovery listens for Tuya LAN announcements on the local network. If broadcasts do not cross your VLANs, choose subnet scan in Advanced Options and enter a CIDR subnet such as `192.168.13.0/24`.
+
+The first setup page asks how you want to add the fryer:
+
+- Cloud lookup: enter your Proscenic email/password. The integration fetches Device ID and Local Key from the Proscenic/Tuya cloud once, then controls the fryer locally. This is the normal setup path because those local Tuya values are not printed on the fryer.
+- Manual local setup: enter Device ID and Local Key yourself. This path does not contact the Proscenic/Tuya cloud, but it only works if you already have those values, usually from a previous cloud lookup or another Tuya tool.
+
+Both setup paths then use the same local connection choices:
+
+- Manual IP setup: enter the fryer IP address if you know it. This avoids discovery and goes straight to a local connection test.
+- Broadcast discovery: leave Fryer IP Address blank and leave Discovery Method as Broadcast. Home Assistant must be able to receive Tuya LAN UDP broadcasts from the fryer network.
+- Subnet discovery: leave Fryer IP Address blank, choose Discovery Method `Subnet scan`, and enter the network in IP/CIDR format in Scan Subnet, for example `192.168.13.0/24`. This is useful when the fryer is on another VLAN and broadcasts do not cross VLANs.
+
+Home Assistant can also start a setup flow from DHCP discovery for known Proscenic/Tuya fryer network hardware. In that case the fryer IP address is prefilled and you only need to provide the Proscenic account details so the integration can fetch the Local Key.
+
+If the fryer is re-paired to Wi-Fi, Proscenic/Tuya may issue a new Device ID or Local Key. Open the integration options and enter the Proscenic password again to refresh the cloud-derived values. The password is used once for that refresh and is not stored.
 
 Known working T21 values:
 

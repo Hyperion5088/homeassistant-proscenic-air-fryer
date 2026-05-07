@@ -3,23 +3,67 @@
     "step": {
       "user": {
         "title": "Proscenic Air Fryer",
-        "description": "Add a stock Proscenic/Tuya air fryer. Enter your Proscenic account details. Leave Fryer IP Address blank to discover it from Tuya LAN broadcasts. The password is used once to fetch the Local Key and is not stored.",
+        "description": "Choose how to add the fryer. Cloud lookup is the normal path: it uses your Proscenic account once to fetch the Device ID and Local Key. Manual local setup is fully local, but you must already know the Device ID and Local Key, usually from a previous cloud lookup or another Tuya tool.",
+        "menu_options": {
+          "cloud": "Cloud lookup",
+          "manual": "Manual local setup"
+        }
+      },
+      "cloud": {
+        "title": "Proscenic Cloud Lookup",
+        "description": "Enter your Proscenic account details so the integration can fetch the Device ID and Local Key. This is normally required at least once because those local Tuya values are not printed on the fryer. Enter the Fryer IP Address if you know it, or leave it blank and use Advanced Options for broadcast or subnet discovery. For subnet scan, enter the network in IP/CIDR format, for example 192.168.13.0/24. The password is used once and is not stored.",
         "data": {
           "username": "Proscenic Email",
           "password": "Proscenic Password",
           "host": "Fryer IP Address",
-          "device_id": "Device ID",
-          "local_key": "Local Key",
           "discovery_method": "Discovery Method",
           "scan_subnet": "Scan Subnet",
           "region": "Tuya Region",
           "protocol_version": "Tuya Protocol Version",
           "temperature_unit": "Temperature Unit"
         },
+        "data_description": {
+          "username": "Email address used to sign in to the Proscenic app.",
+          "password": "Used once during setup to fetch the Tuya Local Key. It is not stored.",
+          "host": "Optional. Enter the fryer IP address manually, or leave blank to discover it by broadcast or subnet scan.",
+          "discovery_method": "Used only when Fryer IP Address is blank. Broadcast listens for Tuya LAN announcements; Subnet scan probes the IP/CIDR range below.",
+          "scan_subnet": "Required only for Subnet scan. Enter a subnet in IP/CIDR format, for example 192.168.13.0/24.",
+          "region": "Tuya data-center region used by the Proscenic account.",
+          "protocol_version": "Local Tuya protocol version. The tested T21 uses 3.3.",
+          "temperature_unit": "Display unit used by Home Assistant. The fryer reports raw temperatures in Fahrenheit."
+        },
         "sections": {
           "advanced_options": {
             "name": "Advanced Options",
-            "description": "Usually leave these unchanged. Device ID and Local Key are fetched automatically when left blank. Use subnet scan when UDP broadcasts do not cross VLANs."
+            "description": "Cloud lookup and discovery settings. The Device ID and Local Key are fetched from the Proscenic cloud. Use Subnet scan with an IP/CIDR range such as 192.168.13.0/24 when broadcasts do not cross VLANs."
+          }
+        }
+      },
+      "manual": {
+        "title": "Manual Local Setup",
+        "description": "Enter the Tuya Device ID and Local Key yourself. This path is fully local and does not use Proscenic cloud credentials, but it only works if you already have those values. Most users will need to use Cloud lookup first, then can use manual setup later. Enter the Fryer IP Address if you know it, or leave it blank and use Advanced Options for broadcast or subnet discovery. For subnet scan, enter the network in IP/CIDR format, for example 192.168.13.0/24.",
+        "data": {
+          "device_id": "Device ID",
+          "local_key": "Local Key",
+          "host": "Fryer IP Address",
+          "discovery_method": "Discovery Method",
+          "scan_subnet": "Scan Subnet",
+          "protocol_version": "Tuya Protocol Version",
+          "temperature_unit": "Temperature Unit"
+        },
+        "data_description": {
+          "device_id": "Tuya device ID for the fryer.",
+          "local_key": "Tuya Local Key for the fryer.",
+          "host": "Optional. Enter the fryer IP address manually, or leave blank to discover it by broadcast or subnet scan.",
+          "discovery_method": "Used only when Fryer IP Address is blank. Broadcast listens for Tuya LAN announcements; Subnet scan probes the IP/CIDR range below.",
+          "scan_subnet": "Required only for Subnet scan. Enter a subnet in IP/CIDR format, for example 192.168.13.0/24.",
+          "protocol_version": "Local Tuya protocol version. The tested T21 uses 3.3.",
+          "temperature_unit": "Display unit used by Home Assistant. The fryer reports raw temperatures in Fahrenheit."
+        },
+        "sections": {
+          "advanced_options": {
+            "name": "Advanced Options",
+            "description": "Discovery and display settings. Use Subnet scan with an IP/CIDR range such as 192.168.13.0/24 when broadcasts do not cross VLANs."
           }
         }
       }
@@ -39,18 +83,25 @@
     "step": {
       "init": {
         "title": "Proscenic Air Fryer Options",
+        "description": "Change the connection and display settings. If the fryer is re-paired to Wi-Fi, its Device ID or Local Key may change. Enter the Proscenic password here to refresh those cloud-derived values; the password is used once and is not stored.",
         "data": {
           "host": "Fryer IP Address",
-          "local_key": "Local Key",
-          "discovery_method": "Discovery Method",
-          "scan_subnet": "Scan Subnet",
-          "protocol_version": "Tuya Protocol Version",
+          "username": "Proscenic Email",
+          "password": "Proscenic Password",
           "temperature_unit": "Temperature Unit"
+        },
+        "data_description": {
+          "host": "Current fryer IP address used for local control.",
+          "username": "Email address used to sign in to the Proscenic app.",
+          "password": "Optional. Enter only to refresh the Device ID and Local Key from the Proscenic cloud, for example after re-pairing Wi-Fi. It is not stored.",
+          "temperature_unit": "Display unit used by Home Assistant. The fryer reports raw temperatures in Fahrenheit."
         }
       }
     },
     "error": {
       "cannot_connect": "Could not connect to the fryer locally.",
+      "cannot_fetch_key": "Could not refresh the local key from the Proscenic account.",
+      "invalid_auth": "The Proscenic credentials were rejected.",
       "unknown": "Unexpected error."
     }
   }

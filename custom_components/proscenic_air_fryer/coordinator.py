@@ -92,11 +92,12 @@ class ProscenicAirFryerCoordinator(DataUpdateCoordinator[ProscenicAirFryerData])
         self.entry = entry
         self.data = ProscenicAirFryerData()
         self._pending_refresh_cancel: Callable[[], None] | None = None
+        config = self.config
         self._client = ProscenicLocalTuyaClient(
-            str(entry.data[CONF_DEVICE_ID]),
-            str(entry.data[CONF_HOST]),
-            str(entry.data[CONF_LOCAL_KEY]),
-            str(entry.data[CONF_PROTOCOL_VERSION]),
+            str(config[CONF_DEVICE_ID]),
+            str(config[CONF_HOST]),
+            str(config[CONF_LOCAL_KEY]),
+            str(config[CONF_PROTOCOL_VERSION]),
         )
 
     @property
