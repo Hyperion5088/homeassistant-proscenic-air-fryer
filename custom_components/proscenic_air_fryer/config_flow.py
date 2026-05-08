@@ -300,6 +300,8 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self.context["title_placeholders"] = {
             "name": "Proscenic Air Fryer"
         }
+        if self._async_discovery_already_configured(host, mac_address):
+            return self.async_abort(reason="already_configured")
         if mac_address:
             await self.async_set_unique_id(mac_address)
             self._abort_if_unique_id_configured(updates={CONF_HOST: host})
@@ -351,7 +353,7 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             except Exception:  # noqa: BLE001
                 errors["base"] = "unknown"
             else:
-                await self.async_set_unique_id(entry_data[CONF_DEVICE_ID])
+                await self.async_set_unique_id(_entry_unique_id(entry_data))
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(
                     title=entry_data.get("name", "Proscenic Air Fryer"),
@@ -484,12 +486,27 @@ class ProscenicAirFryerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> config_entries.ConfigFlowResult:
         """Test local connectivity and create the config entry."""
         entry_data = await self.hass.async_add_executor_job(_finalize_setup, data)
-        await self.async_set_unique_id(entry_data[CONF_DEVICE_ID])
+        await self.async_set_unique_id(_entry_unique_id(entry_data))
         self._abort_if_unique_id_configured()
         return self.async_create_entry(
             title=entry_data.get("name", "Proscenic Air Fryer"),
             data=entry_data,
         )
+
+    @callback
+    def _async_discovery_already_configured(
+        self,
+        host: str | None,
+        mac_address: str | None,
+    ) -> bool:
+        """Return true when a DHCP discovery matches an existing config entry."""
+        for entry in self._async_current_entries():
+            entry_data = {**entry.data, **entry.options}
+            if mac_address and entry_data.get(CONF_MAC_ADDRESS) == mac_address:
+                return True
+            if host and entry_data.get(CONF_HOST) == host:
+                return True
+        return False
 
     @staticmethod
     @callback
@@ -693,6 +710,11 @@ def _finalize_setup(data: dict[str, Any]) -> dict[str, Any]:
         "initial_dps": raw_status,
         "discovery": data.get("discovery"),
     }
+
+
+def _entry_unique_id(data: dict[str, Any]) -> str:
+    """Return the preferred config entry unique ID."""
+    return data.get(CONF_MAC_ADDRESS) or data[CONF_DEVICE_ID]
 
 
 def _clean_input(data: dict[str, Any]) -> dict[str, Any]:
