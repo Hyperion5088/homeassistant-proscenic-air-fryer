@@ -1,6 +1,6 @@
 # Proscenic Air Fryer for Home Assistant
 
-**Beta status:** this integration is experimental. It has only been tested against one Proscenic T21 on the author's network. It may work with other Proscenic/Tuya air fryer models, but datapoints can vary by region, firmware, and model.
+**Compatibility status:** this integration has been tested against one Proscenic T21 on the author's network. It may work with other Proscenic/Tuya air fryer models, but datapoints can vary by region, firmware, and model.
 
 Custom Home Assistant integration for a stock Proscenic T21 air fryer. Other stock Proscenic/Tuya air fryers may work if they use the same local Tuya protocol and compatible datapoints.
 
